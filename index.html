@@ -1,0 +1,749 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#241a2e">
+<title>Prag · Brigitte &amp; Sylvia · 60</title>
+<style>
+:root{
+  --paper:#f5eee5;
+  --card:#fffdf8;
+  --ink:#241a2e;
+  --soft:#6f6376;
+  --granat:#8e2f3c;
+  --granat-dark:#6e2230;
+  --gold:#b8891f;
+  --gold-soft:#e7d3a1;
+  --moldau:#41626e;
+  --line:#e6dac7;
+  --radius:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',Roboto,sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  line-height:1.55;
+  padding-bottom:60px;
+}
+.display{font-family:'Didot','Bodoni 72','Playfair Display',Georgia,'Times New Roman',serif}
+
+/* ---------- Splash ---------- */
+#splash{
+  position:fixed;inset:0;z-index:100;
+  background:radial-gradient(ellipse at 50% 30%, #3a2440 0%, #241a2e 70%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:32px 24px;color:#f3ead8;
+  transition:opacity .8s ease, visibility .8s;
+}
+#splash.gone{opacity:0;visibility:hidden;pointer-events:none}
+.splash-60{
+  font-size:128px;line-height:1;color:transparent;
+  background:linear-gradient(160deg,#f0d48a 10%,#b8891f 45%,#f6e3ae 60%,#9a7118 90%);
+  -webkit-background-clip:text;background-clip:text;
+  letter-spacing:-6px;
+  text-shadow:0 0 60px rgba(232,200,120,.25);
+  margin-bottom:6px;
+}
+.splash-eyebrow{font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:#cdb98c;margin-bottom:22px}
+.splash-names{font-size:34px;line-height:1.2;margin-bottom:14px;font-style:italic}
+.splash-text{font-size:15.5px;color:#d9cdde;max-width:300px;margin:0 auto 34px}
+#openCard{
+  font-family:inherit;font-size:16px;font-weight:600;
+  color:#241a2e;background:linear-gradient(160deg,#f0d48a,#caa044);
+  border:none;border-radius:999px;padding:15px 34px;
+  box-shadow:0 6px 24px rgba(220,180,90,.35);
+}
+#openCard:active{transform:scale(.97)}
+.splash-foot{position:absolute;bottom:max(22px, env(safe-area-inset-bottom));font-size:12px;color:#8d7f95}
+
+/* Konfetti */
+.confetti{position:fixed;top:-20px;z-index:99;border-radius:2px;pointer-events:none;
+  animation:fall linear forwards}
+@keyframes fall{
+  to{transform:translateY(110vh) rotate(720deg);opacity:.9}
+}
+@media (prefers-reduced-motion: reduce){
+  .confetti{display:none}
+  html{scroll-behavior:auto}
+}
+
+/* ---------- Header ---------- */
+header.hero{padding:30px 22px 14px;text-align:center}
+.hero-eyebrow{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:8px}
+.hero h1{font-size:30px;line-height:1.18;font-weight:500;letter-spacing:-.01em}
+.hero .sub{font-size:14px;color:var(--soft);margin-top:8px}
+
+/* ---------- Tabs ---------- */
+nav#tabs{
+  position:sticky;top:0;z-index:50;
+  display:flex;gap:8px;overflow-x:auto;
+  padding:12px 16px;
+  background:rgba(245,238,229,.92);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+  scrollbar-width:none;
+}
+nav#tabs::-webkit-scrollbar{display:none}
+.tab{
+  flex:0 0 auto;font-family:inherit;
+  border:1px solid var(--line);background:var(--card);
+  border-radius:999px;padding:8px 16px;
+  font-size:14px;color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;line-height:1.2;
+}
+.tab small{font-size:10px;color:var(--soft);letter-spacing:.04em}
+.tab.active{background:var(--granat);border-color:var(--granat);color:#fbf3e6}
+.tab.active small{color:#e8c9c0}
+
+/* ---------- Panels ---------- */
+.panel{display:none;padding:20px 16px 30px;max-width:640px;margin:0 auto}
+.panel.active{display:block}
+.day-head{margin-bottom:6px}
+.day-head h2{font-size:24px;font-weight:500}
+.day-head .date{font-size:13px;color:var(--gold);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.day-intro{font-size:14.5px;color:var(--soft);margin:8px 0 16px}
+.progress-wrap{margin-bottom:20px}
+.progress-label{font-size:12px;color:var(--soft);margin-bottom:6px}
+.progress-bar{height:6px;background:#e9ddc9;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--granat));border-radius:3px;transition:width .4s ease}
+
+/* ---------- Timeline & Cards ---------- */
+.stops{position:relative}
+.stops::before{
+  content:'';position:absolute;left:25px;top:14px;bottom:14px;width:2px;
+  background:linear-gradient(var(--gold-soft),var(--granat) 60%,var(--granat-dark));
+  opacity:.45;
+}
+.stop{position:relative;padding-left:56px;margin-bottom:14px}
+.dot{
+  position:absolute;left:17px;top:16px;width:18px;height:18px;border-radius:50%;
+  background:var(--paper);border:2px solid var(--granat);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:var(--granat);
+}
+.stop.done .dot{background:var(--granat);color:#fff}
+.stop.done .dot::after{content:'✓';font-size:10px;font-weight:700}
+.time{font-size:11px;font-weight:700;color:var(--granat);letter-spacing:.02em;
+  position:absolute;left:0;top:38px;width:52px;text-align:center}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:0 1px 3px rgba(60,40,20,.05);
+  overflow:hidden;
+}
+.stop.done .card{opacity:.72}
+.card-head{
+  width:100%;display:flex;align-items:center;gap:12px;
+  padding:14px 14px;border:none;background:none;text-align:left;
+  font-family:inherit;color:inherit;
+}
+.card-emoji{font-size:24px;flex:0 0 auto}
+.card-title{flex:1;min-width:0}
+.card-title .name{font-size:15.5px;font-weight:600;line-height:1.3}
+.card-title .short{font-size:12.5px;color:var(--soft);margin-top:2px}
+.chev{flex:0 0 auto;color:var(--soft);font-size:13px;transition:transform .25s}
+.stop.open .chev{transform:rotate(180deg)}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.badge{font-size:10.5px;font-weight:700;letter-spacing:.03em;padding:2.5px 9px;border-radius:999px}
+.badge.booked{background:var(--granat);color:#fbf0ea}
+.badge.reserve{background:#dbe7ec;color:#2d505d}
+.badge.walkin{background:#ece4d4;color:#6d5c33}
+.badge.pause{background:#f3e3c2;color:#7a5410}
+.card-body{display:none;padding:2px 16px 16px;border-top:1px dashed var(--line)}
+.stop.open .card-body{display:block}
+.card-body p{font-size:14.5px;margin:12px 0;color:#3a3142}
+.fact{
+  margin:14px 0;padding:11px 14px;border-left:3px solid var(--gold);
+  background:#faf3e2;border-radius:0 10px 10px 0;
+  font-size:13.5px;color:#5d4a1d;
+}
+.fact b{display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:3px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.btn{
+  font-family:inherit;font-size:13.5px;font-weight:600;
+  border-radius:999px;padding:9px 16px;border:1.5px solid transparent;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.btn:active{transform:scale(.97)}
+.btn-audio{background:var(--ink);color:#f3ead8;border-color:var(--ink)}
+.btn-audio.playing{background:var(--granat);border-color:var(--granat);animation:pulse 1.6s ease infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 7px rgba(142,47,60,.12)}}
+.btn-visited{background:none;color:var(--soft);border-color:var(--line)}
+.stop.done .btn-visited{background:var(--granat);color:#fff;border-color:var(--granat)}
+.btn-map{background:none;color:var(--moldau);border-color:#c4d2d8;text-decoration:none}
+
+/* ---------- Praktisch-Panel ---------- */
+.info-block{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+.info-block h3{font-size:15px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.info-block p,.info-block li{font-size:14px;color:#3a3142;margin:5px 0}
+.info-block ul{padding-left:18px}
+.info-block a{color:var(--granat);font-weight:600;text-decoration:none}
+.book-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13.5px}
+.book-row:last-child{border-bottom:none}
+.book-status{font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap;align-self:center}
+.s-ok{background:#e2efe4;color:#2c5e36}
+.s-todo{background:#f7e3e0;color:#8e2f3c}
+.phrase{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px dashed var(--line);font-size:13.5px}
+.phrase:last-child{border:none}
+.phrase i{color:var(--soft);font-style:normal}
+
+footer{padding:24px 20px;text-align:center;font-size:12.5px;color:var(--soft)}
+footer .display{font-size:16px;color:var(--granat);margin-bottom:4px}
+</style>
+</head>
+<body>
+
+<!-- ======= Geburtstags-Splash ======= -->
+<div id="splash">
+  <div class="splash-eyebrow">11.–15. Juni 2026 · Praha</div>
+  <div class="splash-60 display">60</div>
+  <div class="splash-names display">Liebe Brigitte,<br>liebe Sylvia</div>
+  <p class="splash-text">Zwei Schwestern. Sechzig Jahre. Eine goldene Stadt, die sich extra für euch herausgeputzt hat.</p>
+  <button id="openCard">Karte aufklappen&ensp;🎉</button>
+  <div class="splash-foot">Mit Liebe geplant von Anthony &amp; Denis</div>
+</div>
+
+<header class="hero">
+  <div class="hero-eyebrow">Der Geburtstags-Reiseführer</div>
+  <h1 class="display">Prag, die Goldene —<br>zum goldenen Sechziger</h1>
+  <p class="sub">Vier Tage · vier Themen · zwei Jubilarinnen</p>
+</header>
+
+<nav id="tabs"></nav>
+<main id="panels"></main>
+
+<footer>
+  <div class="display">Na zdraví! 🥂</div>
+  Tippt eine Karte an für Geschichten, Audio &amp; Häkchen.<br>Funktioniert auch offline in Prag.
+</footer>
+
+<script>
+/* ============== DATEN ============== */
+const DAYS = [
+{
+  key:'do', tag:'Do', date:'11. Juni', title:'Ankommen',
+  intro:'Später Nachmittag, leichte Füße: Heute nur schnuppern, staunen und das erste Pivo. Das volle Programm beginnt morgen.',
+  stops:[
+  {
+    t:'17:00', e:'🔑', n:'Check-in · Zlatnická 1127/4',
+    short:'Euer Zuhause — die „Goldschmiedegasse“',
+    g:[50.0901624,14.4325082],
+    story:`<p>Willkommen in Prag! Euer Apartment liegt in der Petrská čtvrť — einem der letzten Altstadt-Viertel, in dem noch echte Prager wohnen. Von hier erreicht ihr alles zu Fuß: 5 Minuten zum Platz der Republik, 8 zum Altstädter Ring, 6 zum Hauptbahnhof.</p><p>Brigitte, Sylvia — kleine Pointe zum Einzug: Eure Straße heißt übersetzt <b>Goldschmiedegasse</b>. Eine goldene Adresse zum goldenen Geburtstag. Das haben wir selbstverständlich genau so geplant.</p>`,
+    fact:'„Zlatník“ ist das tschechische Wort für Goldschmied — im Mittelalter saßen hier die Handwerker, die Prags hundert Türme vergoldeten.',
+    audio:`Herzlich willkommen, Brigitte und Sylvia! Ihr steht jetzt in der Goldschmiedegasse — und das ist kein Zufall, sondern Fügung: eine goldene Adresse für zwei goldene Jubilarinnen. Dieses Viertel heißt Petrská-Viertel und ist eine der wenigen Ecken der Altstadt, in der morgens noch echte Prager ihre Brötchen holen. Merkt euch den Heimweg gut — nach ein, zwei Gläsern Pilsner sehen alle Barockfassaden verdächtig ähnlich aus. In den nächsten vier Tagen bekommt ihr Türme, Synagogen, eine Burg, eine Bibliothek wie aus Harry Potter und ein Schiff mit Abendessen. Aber jetzt: Koffer abstellen, bequeme Schuhe an — Prag wartet direkt vor der Tür.`
+  },
+  {
+    t:'18:00', e:'🏰', n:'Pulverturm & Gemeindehaus',
+    short:'Wo die Könige zur Krönung einritten',
+    g:[50.087273,14.4277887],
+    story:`<p>Der Pulverturm ist eines von ursprünglich dreizehn Stadttoren — begonnen 1475, also älter als Kolumbus’ Amerikafahrt. Hier startete der <b>Königsweg</b>: Jeder böhmische König zog durch dieses Tor zur Krönung hinauf zur Burg. Ihr wandelt die nächsten Tage also wortwörtlich auf königlichen Spuren.</p><p>Gleich daneben das Gemeindehaus (Obecní dům), Prags Jugendstil-Juwel von 1912. Am 28. Oktober 1918 wurde hier die unabhängige Tschechoslowakei ausgerufen.</p>`,
+    fact:'Seinen Namen erhielt der Turm erst im 18. Jahrhundert, als man darin Schießpulver lagerte — vorher hieß er schlicht „Neuer Turm“.',
+    audio:`Vor euch steht der Pulverturm — fünfundsechzig Meter gotischer Stolz, begonnen im Jahr 1475. Durch genau dieses Tor ritten die böhmischen Könige zu ihrer Krönung. Heute Abend seid ihr die Königinnen, also: Haltung annehmen und feierlich durchschreiten! Den Namen hat der Turm übrigens nicht vom Puder, sondern vom Schießpulver, das hier im achtzehnten Jahrhundert lagerte. Und das prächtige Haus daneben? Das Gemeindehaus, der schönste Jugendstilbau der Stadt. In seinem Festsaal wurde 1918 die Tschechoslowakei gegründet — und der Kaffee dort ist bis heute staatstragend gut. Den heben wir uns für Sonntag auf.`
+  },
+  {
+    t:'18:30', e:'🕰️', n:'Altstädter Ring & Aposteluhr',
+    short:'Die älteste laufende astronomische Uhr der Welt',
+    g:[50.0870215,14.4207065],
+    story:`<p>Die Aposteluhr (Orloj) von <b>1410</b> ist die älteste noch funktionierende astronomische Uhr der Welt. Zur vollen Stunde öffnen sich zwei Fensterchen, die zwölf Apostel ziehen vorüber — und ein Skelett läutet dazu das Totenglöckchen. Die Prager des Mittelalters fanden das erbaulich.</p><p>Der Legende nach ließ der Stadtrat den Uhrmacher blenden, damit er nie ein zweites solches Werk bauen könne. Historisch belegt ist das nicht — aber es passt zu Prag: schön, golden, ein bisschen düster.</p>`,
+    fact:'Die Uhr zeigt drei Zeitsysteme parallel: mitteleuropäische, altböhmische und babylonische Zeit — dazu Mondphase und Tierkreis. Eine mittelalterliche Apple Watch.',
+    audio:`Schaut nach oben: Diese Uhr tickt seit dem Jahr 1410 — sie ist die älteste astronomische Uhr der Welt, die noch läuft. Brigitte, Sylvia — ihr bringt zusammen stolze hundertzwanzig Jahre mit, die Uhr ist über sechshundert. Gegen die seid ihr zwei Küken. Zur vollen Stunde gibt es das berühmte Apostelspiel: Zwölf Figuren ziehen am Fenster vorbei, und ein Skelett läutet die Glocke — der Tod als Zeremonienmeister, sehr böhmischer Humor. Die Legende behauptet, der Uhrmacher sei nach Fertigstellung geblendet worden, damit er nie eine zweite baut. Vermutlich nur ein Gruselmärchen. Sicher ist: Gleich klatschen hundert Menschen um euch herum. Klatscht einfach mit — die Uhr hat es sich verdient.`
+  },
+  {
+    t:'19:30', e:'🍺', n:'Abendessen · Lokál Dlouhá', b:[['reserve','Am Vortag reservieren']],
+    short:'Tankbier & Knödel-Grundkurs, 5 Min. vom Apartment',
+    g:[50.0906931,14.4257574],
+    story:`<p>Euer erster Abend gehört der tschechischen Wirtshaus-Schule: Im Lokál fließt Pilsner Urquell als <b>„Tankové pivo“</b> — unpasteurisiert, direkt aus Kupfertanks. Frischer bekommt man es nur in der Brauerei selbst.</p><p>Auf der Karte: Svíčková (Rinderbraten in Sahnesauce mit Knödeln und Preiselbeeren), Gulasch, Schnitzel. Die Kellner wirken bisweilen streng — das gehört zum Konzept und ist liebevoll gemeint. Meistens.</p>`,
+    fact:'Tschechien ist unangefochtener Weltmeister im Bierkonsum: rund 130 Liter pro Kopf und Jahr. Deutschland schafft nur etwa 90 — Luft nach oben.',
+    audio:`Erster Abend, erste Tschechisch-Lektion: „Pivo, prosím“ heißt „Ein Bier, bitte“ — mehr Vokabeln braucht ihr heute nicht. Im Lokál kommt das Pilsner als Tankbier auf den Tisch: unpasteurisiert, aus dem Kupfertank, mit cremigem Schaum. Die Tschechen trinken hundertdreißig Liter pro Kopf und Jahr — Weltrekord. Ihr müsst das nicht heute Abend aufholen. Kulinarischer Einstiegstipp: Svíčková — zarter Rinderbraten in Sahnesauce mit Knödeln und einem Klecks Preiselbeeren. Klingt nach Sonntagsessen bei Oma, schmeckt auch genau so. Und falls die Bedienung knapp angebunden ist: Das ist hier Folklore, keine Beleidigung. Na zdraví — zum Wohl, ihr zwei!`
+  }
+  ]
+},
+{
+  key:'fr', tag:'Fr', date:'12. Juni', title:'Altstadt & Josefov',
+  intro:'Erst Turm und Trubel, mittags Schnittchen, um 14 Uhr übernimmt Zuzana für drei Stunden tausend Jahre Geschichte. Abends: Brücke im Goldlicht.',
+  stops:[
+  {
+    t:'8:00', e:'☕', n:'Frühstück · Café Imperial', b:[['walkin','Walk-in — früh da sein']],
+    short:'Frühstücken in einer Keramik-Kathedrale (seit 1914)',
+    g:[50.089846,14.432864],
+    story:`<p>Das Café Imperial von 1914 ist eine begehbare Keramik-Kathedrale: Boden, Wände, Decke — alles original Art-déco-Mosaik. Kafka saß hier, später Revolutionäre, heute Frühstücksgäste mit gutem Geschmack.</p><p>Wir kommen als Walk-in um Punkt 8 — dann ist die Café-Hälfte noch entspannt. Empfehlung: Eggs Benedict oder das böhmische Frühstück.</p>`,
+    fact:'Früher konnte man hier eine Schüssel alter Krapfen kaufen — und sie nach Belieben auf andere Gäste werfen. Der Brauch wurde leider abgeschafft.',
+    audio:`Guten Morgen im Café Imperial, Baujahr 1914! Schaut euch in Ruhe um: Jede einzelne Fliese an Wand und Decke ist über hundert Jahre alt — ihr frühstückt praktisch in einem Kunstwerk. Franz Kafka war Stammgast, der hatte allerdings meistens schlechte Laune — lasst euch davon nicht anstecken. Mein Lieblingsdetail aus der Hausgeschichte: Früher gab es hier eine Schüssel mit alten Krapfen zu kaufen, ausdrücklich zum Werfen auf andere Gäste. Kein Witz! Der Service wurde irgendwann eingestellt, vermutlich zu Recht. Heute gilt: Nichts werfen, alles genießen — und ordentlich stärken. Um halb zehn geht es auf den Rathausturm, und der Ausblick verdient eure volle Konzentration.`
+  },
+  {
+    t:'9:30', e:'🗼', n:'Altstädter Rathausturm',
+    short:'Mit dem Aufzug zum schönsten Blick der Altstadt',
+    g:[50.0870215,14.4207065],
+    story:`<p>Das Altstädter Rathaus wurde 1338 gegründet, der Turm kam 1364 dazu — fast 70 Meter Stadtstolz. Oben wartet der schönste Rundblick der Altstadt: die Doppeltürme der Teynkirche, das rote Dächermeer, im Hintergrund die Burg.</p><p>Das Beste: Ein gläserner Aufzug fährt fast bis ganz nach oben. Treppensteigen ist optional, Staunen Pflicht.</p>`,
+    fact:'Der gläserne Aufzug von 1999 gewann Architekturpreise — er gilt als Paradebeispiel dafür, wie Hightech respektvoll in Gotik einziehen kann.',
+    audio:`Jetzt geht es hoch hinaus — keine Sorge, mit dem Aufzug. Der Rathausturm steht hier seit 1364, der gläserne Lift erst seit 1999, und genau in dieser Reihenfolge muss man das würdigen: sechshundert Jahre Turm, dann endlich Komfort. Oben liegt euch Prag zu Füßen: die zwei spitzen Türme der Teynkirche — die Prager nennen sie liebevoll Adam und Eva —, das rote Dächermeer und am Horizont die Burg, die wir morgen erobern. Nehmt euch Zeit für eine komplette Runde auf dem Umgang. Und winkt ruhig den Menschen unten an der Aposteluhr zu — von hier oben sehen alle ein bisschen aus wie Apostel.`
+  },
+  {
+    t:'10:45', e:'🧺', n:'Havelská Markt',
+    short:'Seit 1232 wird hier gehandelt',
+    g:[50.0847749,14.4209608],
+    story:`<p>Seit <b>1232</b> wird an dieser Stelle gehandelt — Havelská ist der letzte erhaltene Markt des mittelalterlichen Prag. Heute: Obst, Honiglebkuchen, Holzspielzeug, Marionetten.</p><p>Kurzer Bummel, kein Marathon. Die ehrlichsten Mitbringsel: geschnitzte Kleinigkeiten und eine Tüte Kirschen für die Handtasche.</p>`,
+    fact:'Der Markt überlebte Kriege, Feuer, Kommunismus und Massentourismus — fast 800 Jahre Handel ohne Pause.',
+    audio:`Dieser Markt ist seit dem Jahr 1232 in Betrieb — seit fast achthundert Jahren wird an genau dieser Stelle gefeilscht. Was hier schon alles über die Stände ging: Rüben, Stoffe, Gänse, Propaganda — und heute eben Magnete und Marionetten. Brigitte, Sylvia: Die Holzspielzeuge und Honiglebkuchen sind die ehrlichsten Souvenirs weit und breit. Und das Obst ist erstaunlich gut — eine Tüte Kirschen für unterwegs hat noch keine Stadtbesichtigung schlechter gemacht. Zehn Minuten Bummel, dann ziehen wir weiter zur Luxusmeile. Dort ist alles deutlich teurer als an diesem Stand — aber das Gucken ist zum Glück noch gratis.`
+  },
+  {
+    t:'11:30', e:'💎', n:'Pařížská — die Pariser Straße',
+    short:'Prags Prachtboulevard — Schaufenster & Jugendstil',
+    g:[50.0894506,14.4193741],
+    story:`<p>Die Pařížská entstand um 1900, als das alte jüdische Ghetto saniert wurde — man wollte einen Boulevard „wie in Paris“. Heute reihen sich Cartier, Dior und Louis Vuitton in Jugendstilfassaden.</p><p>Schaufensterbummel ausdrücklich erlaubt. Die Häuser oben sind mindestens so sehenswert wie die Taschen unten: Erker, Türmchen, vergoldete Putten.</p>`,
+    fact:'Die Pařížská zählt zu den 20 teuersten Einkaufsstraßen der Welt — die Ladenmieten schlagen den Berliner Ku’damm deutlich.',
+    audio:`Willkommen auf der Pařížská, der Pariser Straße — Prags Antwort auf die Champs-Élysées, nur kürzer und mit besserem Bier in Reichweite. Die Straße entstand um 1900 und gehört heute zu den zwanzig teuersten Einkaufsmeilen der Welt. Mein Tipp: Schaut beim Bummeln nicht nur in die Schaufenster, sondern vor allem nach oben — die Jugendstilfassaden mit ihren Türmchen und goldenen Figuren kosten keinen Cent Eintritt. Und falls jemand fragt: Eine Handtasche von hier passt selbstverständlich in jedes Handgepäck. Zum Sechzigsten wäre das ja fast schon vernünftig. Wir sagen nur: Der Geldautomat ist gleich um die Ecke.`
+  },
+  {
+    t:'12:30', e:'🥪', n:'Lunch · Sisters Bistro', b:[['walkin','Walk-in']],
+    short:'Chlebíčky — und ja, „Sisters“ für zwei Schwestern',
+    g:[50.0908066,14.4269622],
+    story:`<p>Mittags gibt es Prags beste <b>Chlebíčky</b> — die berühmten belegten Brote, seit 1916 tschechische Institution (erfunden vom Feinkosthändler Jan Paukert). Jeder pickt sich 2–3 Stück an der Theke: Ei, Schinken, Roastbeef, Rote Bete mit Ziegenkäse.</p><p>Und ja: Ein Bistro namens <b>„Sisters“</b> für zwei Schwestern zum Sechzigsten — das war keine Planung, das war Fügung.</p>`,
+    fact:'Chlebíčky gehören in Tschechien zu jedem Anlass: Geburtstag, Hochzeit, Wahlsieg, Beerdigung. Heute eindeutig: Geburtstag.',
+    audio:`Mittagspause bei „Sisters“ — und nein, liebe Schwestern, das Bistro wurde nicht extra für euch umbenannt. Aber wir tun heute einfach alle so. Hier gibt es Chlebíčky, die berühmten tschechischen Schnittchen: kleine Weißbrotscheiben, kunstvoll beladen mit Ei, Schinken, Lachs oder Roter Bete mit Ziegenkäse. Erfunden wurden sie 1916 vom Feinkosthändler Jan Paukert, und seitdem gibt es in diesem Land keinen Geburtstag ohne sie. Passt also perfekt. Die Regel lautet: Man nimmt zwei bis drei Stück, isst sie elegant aus der Hand — und bestellt dann doch noch ein viertes. Aber nicht zu voll essen! Um zwei beginnt eure Führung, und Zuzana wartet nicht auf Nachzügler.`
+  },
+  {
+    t:'13:50', e:'✍️', n:'Treffpunkt · Kafkas Geburtshaus',
+    short:'Pünktlich sein — hier wartet Zuzana',
+    g:[50.0879683,14.4192851],
+    story:`<p>Franz Kafka wurde 1883 genau hier geboren, am Rand des jüdischen Viertels. Er nannte Prag ein „Mütterchen mit Krallen“ — die Stadt ließ ihn nie los. An der Hausecke erinnert eine Büste an ihn.</p><p>Hier treffen wir <b>Zuzana</b>. Vorher: Toilette, Wasserflasche, bequeme Schuhe — drei Stunden Programm.</p>`,
+    fact:'Kafka verbrachte fast sein ganzes Leben im Umkreis von einem Kilometer um diesen Platz — der wohl sesshafteste Weltliterat aller Zeiten.',
+    audio:`Ihr steht am Geburtshaus von Franz Kafka, Jahrgang 1883 — dem berühmtesten Sohn dieser Stadt und zugleich ihrem größten Nörgler. Er nannte Prag ein Mütterchen mit Krallen: Die Stadt lässt einen nicht mehr los. Ihr werdet das nach vier Tagen bestens verstehen. Kafka hat fast sein gesamtes Leben in einem Umkreis von einem Kilometer um diesen Platz verbracht — so gesehen war er der unambitionierteste Weltliterat der Geschichte. Gleich übernimmt Zuzana und führt euch drei Stunden durch das jüdische Viertel: tausend Jahre Geschichte, prachtvolle Synagogen, ein Friedhof wie aus einem Traum. Genießt eine der bewegendsten Führungen, die diese Stadt zu bieten hat.`
+  },
+  {
+    t:'14:00', e:'✡️', n:'Führung Josefov mit Zuzana', b:[['booked','Gebucht · 3 Std. · Deutsch']],
+    short:'Spanische Synagoge, Pinkas, Alt-Neu & der Alte Friedhof',
+    g:[50.0901479,14.4208465],
+    story:`<p>Drei Stunden durch tausend Jahre jüdisches Prag: die maurisch-goldene <b>Spanische Synagoge</b>, die <b>Pinkas-Synagoge</b> mit den handgeschriebenen Namen von 77.297 Holocaust-Opfern, die <b>Alt-Neu-Synagoge</b> (seit ~1270 in Betrieb — die älteste aktive Synagoge Europas) und der <b>Alte Friedhof</b>, wo sich bis zu zwölf Grabschichten stapeln.</p><p>Auf dem Dachboden der Alt-Neu-Synagoge soll der <b>Golem</b> ruhen — die Lehmfigur, die Rabbi Löw im 16. Jahrhundert zum Schutz der Gemeinde erschaffen haben soll. Der Aufgang ist bis heute gesperrt. Sicher ist sicher.</p>`,
+    fact:'Der Alte Friedhof zeigt rund 12.000 Grabsteine — begraben liegen hier aber vermutlich an die 100.000 Menschen. Platz war im Ghetto das kostbarste Gut.',
+    audio:`Eine Minute Vorbereitung, dann übernimmt die Expertin. Josefov, das jüdische Viertel, war jahrhundertelang eine Stadt in der Stadt — mit eigenen Toren, eigenen Regeln, sogar eigener Zeit: Die Uhr am Jüdischen Rathaus läuft rückwärts, weil Hebräisch von rechts nach links gelesen wird. Ihr seht heute die goldene Spanische Synagoge, die aussieht wie aus Tausendundeiner Nacht, und die Pinkas-Synagoge, deren Wände die handgeschriebenen Namen von siebenundsiebzigtausend Ermordeten tragen — ein stiller, gewaltiger Ort. Und über allem schwebt die Legende vom Golem, der Lehmfigur des Rabbi Löw, die angeblich bis heute auf dem Dachboden der Alt-Neu-Synagoge schläft. Niemand darf nachsehen. Manche Geschichten lässt man besser ungestört.`
+  },
+  {
+    t:'17:10', e:'🛋️', n:'Verschnaufpause im Apartment', b:[['pause','~40 Minuten']],
+    short:'Schuhe aus, Tee, frisch machen — 10 Min. Fußweg',
+    g:[50.0901624,14.4325082],
+    story:`<p>Nach drei Stunden Geschichte: Füße hoch. Vom Viertel sind es nur 10 Minuten nach Hause. Um 17:50 brechen wir wieder auf — frisch, umgezogen und bereit für den schönsten Abendweg der Stadt.</p>`,
+    fact:'Profi-Tipp der Reiseleitung: Wer jetzt „nur kurz“ die Augen zumacht, verpasst das Abendlicht auf der Karlsbrücke. Wecker stellen!'
+  },
+  {
+    t:'18:25', e:'🎨', n:'John-Lennon-Wand & Kampa-Insel',
+    short:'Bunte Rebellion + gelbe Pinguine — hinterlasst einen Gruß!',
+    g:[50.0862506,14.4067918],
+    story:`<p>Die Lennon-Wand war in den 1980ern ein Ventil: Junge Prager malten heimlich Lennon-Porträts und Friedenstexte — die Staatsmacht strich alles über, am nächsten Morgen war es wieder da. Man nannte es <b>„Lennonismus gegen Leninismus“</b>.</p><p>Daneben die Kampa-Insel mit dem Kanal Čertovka („Teufelsbach“), einem alten Mühlrad und knallgelben Riesen-Pinguinen am Ufer — Kunst, die niemand erklären kann, die aber alle fotografieren.</p>`,
+    fact:'Die Wand verändert sich täglich — was ihr heute seht, ist morgen übermalt. Stifte sind erlaubt: Verewigt euch mit einem Geburtstagsgruß!',
+    audio:`Diese bunte Wand war einmal hochpolitisch: In den Achtzigern malten junge Prager hier heimlich John-Lennon-Porträts und Friedensbotschaften — und jede Nacht, nachdem die Polizei alles übermalt hatte, kamen sie einfach wieder. Lennonismus gegen Leninismus, hieß das damals. Heute ist die Wand ein lebendiges Kunstwerk, das sich täglich verändert. Mein Vorschlag: Sucht euch eine freie Ecke und verewigt euch — Brigitte und Sylvia, sechzig, Prag zweitausendsechsundzwanzig. Das ist hier ausdrücklich erwünscht! Danach noch ein Blick auf den Teufelsbach mit dem alten Mühlrad und auf die gelben Riesenpinguine am Ufer. Warum Pinguine? Das fragt sich Prag auch. Aber sie leuchten wirklich schön.`
+  },
+  {
+    t:'19:00', e:'🦆', n:'Abendessen · Pod Věží', b:[['booked','Gebucht · 19:00']],
+    short:'„Unter dem Turm“ — direkt an der Karlsbrücke',
+    g:[50.0873922,14.406731],
+    story:`<p>Abendessen „unter dem Turm“ — direkt am gotischen Brückenturm der Karlsbrücke. Gehobene böhmische Küche: Entenbrust, Tafelspitz, Forelle.</p><p>Nach dem Dessert: einmal über die Brücke schlendern, wenn die Laternen angehen. Der schönste Verdauungsspaziergang der Stadt — und euer Heimweg.</p>`,
+    fact:'Der Kleinseitner Brückenturm nebenan stammt in Teilen noch von der Vorgängerin der Karlsbrücke — der Judithbrücke aus dem 12. Jahrhundert.',
+    audio:`Ihr sitzt „Pod Věží“ — unter dem Turm. Gemeint ist der Brückenturm der Karlsbrücke, keine zwanzig Meter von eurem Tisch entfernt. Hier endet Tag zwei, und ihr habt ihn euch redlich verdient: Turm bestiegen, Markt erobert, drei Stunden Geschichte getankt und der Wand einen Gruß hinterlassen. Bestellt etwas Festliches — die Ente ist hervorragend — und stoßt auf die ersten vierundzwanzig Stunden an. Und hebt euch Energie für den letzten Programmpunkt auf: Der Heimweg führt über die Karlsbrücke, wenn die Laternen brennen und die Burg angestrahlt über allem thront. Das ist der Moment, in dem sich jeder Mensch in Prag verliebt. Ausnahmslos jeder.`
+  }
+  ]
+},
+{
+  key:'sa', tag:'Sa', date:'13. Juni', title:'Burg, Strahov & Loreto',
+  intro:'Der große Tag: Bauernmarkt-Frühstück, dann hinauf auf den Burgberg — Bibliothek, Diamanten, Dom. Abends über die Karlsbrücke zur Pasta.',
+  stops:[
+  {
+    t:'9:00', e:'🥐', n:'Náplavka-Bauernmarkt',
+    short:'Frühstück am Moldau-Ufer — wo die Prager samstags sind',
+    g:[50.0706661,14.4140813],
+    story:`<p>Samstagmorgen an der Moldau: Der Náplavka-Markt ist Prags Lieblingsritual — Bauern, Bäcker, Kaffeestände, dazu Schwäne und Hausboote. Hier frühstücken die Prager, nicht die Touristen.</p><p>Strategie: erst eine Runde gucken, dann querbeet probieren — <b>Koláče</b> (süße Hefeteilchen mit Quark oder Pflaumenmus), geräucherter Käse, frische Säfte.</p>`,
+    fact:'„Náplavka“ heißt schlicht „Anlegestelle“ — vor 15 Jahren ein vergessener Kai, heute der beliebteste Samstagstreff der Stadt.',
+    audio:`Guten Morgen an der Moldau! Der Náplavka-Markt ist das Samstagsritual der Prager — hier kauft die Stadt ihr Gemüse, trinkt ihren ersten Kaffee und tut so, als wäre sie gestern früh ins Bett gegangen. Für euch gilt die Drei-Stationen-Regel. Erstens: ein Koláč — das ist ein süßes Hefeteilchen mit Quark oder Pflaumenmus, die tschechische Antwort auf den Plunder. Zweitens: etwas Herzhaftes vom Räucherstand. Drittens: Kaffee ans Wasser, Schwäne zählen, Beine baumeln lassen. Heute wird euer großer Lauftag — Kloster, Kirche, Burg. Also frühstückt wie Königinnen. Die Kalorien lauft ihr am Burgberg locker dreimal wieder ab.`
+  },
+  {
+    t:'11:00', e:'🚋', n:'Tram 22 → Pohořelec',
+    short:'Prags schönste Straßenbahnfahrt, bergauf',
+    g:[50.0706661,14.4140813],
+    story:`<p>Die Linie 22 ist Prags schönste Tramstrecke: vorbei am Nationaltheater, über die Moldau, dann in Kurven den Burgberg hinauf. Aussteigen an <b>„Pohořelec“</b>.</p><p>Tickets am Automaten in der Bahn (kontaktlos zahlen), 90-Minuten-Ticket reicht. Fensterplatz sichern und Stadt vorbeiziehen lassen.</p>`,
+    fact:'Die 22 ist bei Pragern als „Touristen-Express“ bekannt — leider auch bei Taschendieben. Handtasche nach vorn, dann ist alles gut.'
+  },
+  {
+    t:'11:30', e:'📚', n:'Strahov-Kloster & Bibliothek',
+    short:'Zwei Bibliothekssäle wie aus Harry Potter',
+    g:[50.0861478,14.3892515],
+    story:`<p>Das Strahov-Kloster der Prämonstratenser wurde <b>1143</b> gegründet — und beherbergt zwei der schönsten Bibliothekssäle der Welt: den barocken <b>Theologischen Saal</b> (1679) und den klassizistischen <b>Philosophischen Saal</b> (1794). Rund 200.000 historische Bände unter Deckenfresken.</p><p>Man bestaunt die Säle vom Eingang aus — betreten verboten, staunen Pflicht. Davor: das Kuriositätenkabinett mit Seeungeheuern und einem „Einhorn-Horn“.</p>`,
+    fact:'Das „Einhorn-Horn“ ist in Wahrheit ein Narwal-Stoßzahn — man glaubte Jahrhunderte fest an die Einhorn-Version. Sie war auch deutlich besser fürs Marketing.',
+    audio:`Gleich wird es magisch: Die Strahov-Bibliothek ist der Ort, an dem ausnahmslos jeder denkt — Moment mal, das kenne ich doch aus Harry Potter. Zwei Säle, zusammen zweihunderttausend Bücher, Deckengemälde, alte Globen, vergoldete Regale. Der Theologische Saal ist von 1679, der Philosophische von 1794 — und betreten darf man beide nicht. Man steht an der Tür und staunt. Glaubt mir: Das reicht völlig. Vorher kommt ihr am Kuriositätenkabinett vorbei. Dort liegt ein langes, gewundenes Horn, das die Mönche jahrhundertelang stolz als Einhorn präsentierten. Es ist der Stoßzahn eines Narwals. Aber mal ehrlich, mit sechzig weiß man: An manche Einhörner darf man ruhig weiterglauben.`
+  },
+  {
+    t:'13:00', e:'🍻', n:'Lunch · Klosterbrauerei Strahov',
+    short:'St.-Norbert-Bier & Klosterküche im Hof',
+    g:[50.0868543,14.3883612],
+    story:`<p>Gebraut wird am Strahov seit dem Mittelalter — die heutige Klosterbrauerei macht den <b>„St. Norbert“</b> in mehreren Sorten, dazu deftige Klosterküche: Gulasch im Brotlaib, Zwiebelsuppe, Haxe.</p><p>Im Juni sitzt man herrlich im Hof. Kluger Zug: halbe Portionen — der Tag ist noch lang, und um 15:30 wartet der Dom.</p>`,
+    fact:'St. Norbert, der Ordensgründer, liegt tatsächlich hier oben begraben — seine Gebeine wurden 1627 feierlich nach Strahov überführt. Das Bier zu seinen Ehren hätte ihm hoffentlich geschmeckt.'
+  },
+  {
+    t:'14:30', e:'⛪', n:'Loreto — Wallfahrt & Diamanten',
+    short:'Glockenspiel + Monstranz mit 6.222 Diamanten',
+    g:[50.089239,14.39151],
+    story:`<p>Die Loreto ist Prags barocke Wallfahrtsstätte: Im Innenhof steht die <b>Santa Casa</b> — eine Kopie des „Heiligen Hauses“ von Nazareth, das der Legende nach von Engeln durch die Luft getragen wurde.</p><p>Oben in der Schatzkammer funkelt die <b>„Prager Sonne“</b>: eine Monstranz mit exakt 6.222 Diamanten. Und zur vollen Stunde spielt das Glockenspiel von 1695 mit 27 Glocken ein Marienlied über den Platz.</p>`,
+    fact:'Die 6.222 Diamanten stammen vom Brautkleid der Gräfin Kolowrat — sie vermachte es der Kirche. Recycling auf Adelsniveau.',
+    audio:`Willkommen in der Loreto — Prags glitzerndster Adresse, und das will in dieser Stadt wirklich etwas heißen. Im Innenhof steht eine Kopie des Heiligen Hauses von Nazareth, das der Legende nach von Engeln durch die Luft nach Italien getragen wurde. Die Prager Kopie kam etwas konventioneller hierher: per Bauplan und Maurermeister. Der wahre Star wartet oben in der Schatzkammer: die Prager Sonne, eine Monstranz mit exakt sechstausendzweihundertzweiundzwanzig Diamanten — gestiftet aus dem Brautkleid einer Gräfin. Brigitte, Sylvia: Das ist ab sofort die offizielle Messlatte für Geburtstagsgeschenke. Anthony und Denis arbeiten dran. Und wenn ihr Glück habt, erklingt zur vollen Stunde das Glockenspiel von 1695 — siebenundzwanzig Glocken, ein Lied, Gänsehaut gratis.`
+  },
+  {
+    t:'15:30', e:'👑', n:'Prager Burg & Veitsdom',
+    short:'Größtes Burgareal der Welt — Mucha-Fenster nicht verpassen!',
+    g:[50.0910966,14.4016165],
+    story:`<p>Die Prager Burg ist laut Guinness-Buch das <b>größte zusammenhängende Burgareal der Welt</b> — seit über 1.000 Jahren Sitz der Macht. Herzstück ist der Veitsdom: begonnen 1344, vollendet erst 1929. <b>585 Jahre Bauzeit</b> — da wirkt jede heimische Baustelle plötzlich flott.</p><p>Drinnen: gleich links das leuchtende Jugendstil-Fenster von <b>Alfons Mucha</b>; die Kronjuwelen hinter einer Tür mit sieben Schlössern (die Schlüssel verteilt auf sieben Amtsträger). Danach durchs Goldene Gässchen — im blauen Häuschen Nr. 22 schrieb Kafka.</p>`,
+    fact:'1618 warfen protestantische Adlige zwei kaiserliche Statthalter aus einem Burgfenster — beide überlebten weich im Misthaufen. Der „Prager Fenstersturz“ löste trotzdem den Dreißigjährigen Krieg aus.',
+    audio:`Ihr betretet jetzt das größte Burgareal der Welt — das steht so im Guinness-Buch der Rekorde. Wichtigster Halt: der Veitsdom. Baubeginn 1344, Fertigstellung 1929 — fünfhundertfünfundachtzig Jahre Bauzeit. Es gibt also Hoffnung für wirklich jede Baustelle daheim. Drinnen sofort nach links schauen: Das leuchtende bunte Fenster dort stammt von Alfons Mucha, dem Meister des Jugendstils — es strahlt, als hätte jemand das Licht eingeschaltet. Hinter einer Tür mit sieben Schlössern lagern die böhmischen Kronjuwelen; die sieben Schlüssel sind auf sieben Würdenträger verteilt, vom Präsidenten bis zum Erzbischof. Misstrauen mit System! Und im Goldenen Gässchen, im blauen Häuschen Nummer zweiundzwanzig, schrieb einst Kafka. Das Häuschen ist winzig. Seine Sorgen waren es bekanntlich nicht.`
+  },
+  {
+    t:'18:00', e:'🏛️', n:'Hinab durch Malá Strana',
+    short:'St. Nikolaus von außen — Mozarts Prager Kirche',
+    g:[50.0880269,14.4034704],
+    story:`<p>Über die alte Schlossstiege geht es hinunter in die Kleinseite — Botschaftsviertel, Barockpaläste, Kopfsteinpflaster-Stille. Am Malostranské náměstí thront die <b>St.-Nikolaus-Kirche</b>, Prags prächtigster Barockbau. Innen ist um diese Zeit schon zu — aber die grüne Kuppel und der Platz sind den Stopp wert.</p><p><b>Mozart</b> spielte hier 1787 die Orgel. Als er 1791 starb, hielten die Prager in dieser Kirche eine Trauerfeier mit Tausenden Gästen — größer als alles, was Wien zustande brachte.</p>`,
+    fact:'Mozart liebte Prag, und Prag liebte Mozart: „Meine Prager verstehen mich“, soll er gesagt haben. Wien war ihm zu launisch.'
+  },
+  {
+    t:'18:30', e:'🌉', n:'Karlsbrücke',
+    short:'Die Glücksformel 1-3-5-7-9-7-5-3-1 & ein Wunsch frei',
+    g:[50.0864771,14.4114366],
+    story:`<p>Karl IV. ließ den Grundstein am <b>9.7.1357 um 5:31 Uhr</b> legen — seine Astrologen wählten das Zahlen-Palindrom 1-3-5-7-9-7-5-3-1 als Glücksformel. Sie hat funktioniert: Die Brücke steht seit fast 700 Jahren.</p><p>In den Mörtel kamen der Legende nach <b>Eier</b> zur Härtung — ein Dorf lieferte sie angeblich vorsichtshalber hartgekocht. Auf der Brücke: 30 Barockstatuen. Am glänzenden Relief unter der Nepomuk-Statue (die mit den fünf Sternen) habt ihr einen Wunsch frei.</p>`,
+    fact:'Forscher haben den Mörtel tatsächlich analysiert und organische Bestandteile gefunden — die Eier-Legende könnte einen wahren Kern haben.',
+    audio:`Ihr betretet jetzt fast siebenhundert Jahre Baukunst. Kaiser Karl der Vierte ließ den Grundstein am neunten Juli 1357 um exakt fünf Uhr einunddreißig legen — seine Astrologen hatten die Zahlenfolge eins, drei, fünf, sieben, neun, sieben, fünf, drei, eins als unzerstörbare Glücksformel berechnet. Klingt verrückt — aber die Brücke steht noch. In den Mörtel mischte man der Legende nach Eier; ein Dorf soll sie sicherheitshalber hartgekocht geliefert haben. Sucht auf halber Strecke die Statue des heiligen Nepomuk mit den fünf goldenen Sternen: Das blank geriebene Relief darunter berühren, Wunsch denken — er geht in Erfüllung, und man kehrt nach Prag zurück. Bei zwei Geburtstagskindern zählt das selbstverständlich doppelt.`
+  },
+  {
+    t:'19:15', e:'🍝', n:'Abendessen · Pasta Fresca', b:[['booked','Gebucht · 19:15']],
+    short:'Hausgemachte Pasta im Gewölbe — 2 Min. vom Bett',
+    g:[50.08745,14.42425],
+    story:`<p>Zum Abschluss des großen Tages: hausgemachte Pasta im Kellergewölbe an der Celetná — gleiche Restaurantfamilie wie das Lokál, nur italienisch. Nach zwei Tagen Knödeln eine diplomatische Geste an den Magen.</p><p>Danach sind es zwei Minuten ins Bett. Beste Planung der ganzen Reise.</p>`,
+    fact:'Die Celetná gehört zum alten Königsweg — ihr esst eure Tagliatelle also direkt an der Krönungsroute.'
+  }
+  ]
+},
+{
+  key:'so', tag:'So', date:'14. Juni', title:'Bummel & Bootsfahrt',
+  intro:'Der entspannteste Tag: Kaffeehaus-Kultur, Schaufenster, ein totes Pferd an der Decke — und abends das große Geburtstags-Finale auf der Moldau.',
+  stops:[
+  {
+    t:'10:00', e:'🎻', n:'Frühstück · Café Louvre', b:[['reserve','Reservieren — sonntags voll']],
+    short:'Wo Einstein Geige spielte und das Wort „Roboter“ entstand',
+    g:[50.0820693,14.4186192],
+    story:`<p>Seit 1902 Prags intellektuelles Wohnzimmer: Hier spielte <b>Albert Einstein</b> Geige (er lehrte 1911/12 als Professor in Prag), Kafka diskutierte Philosophie, und die Brüder Čapek erfanden das Wort <b>„Roboter“</b> — vom tschechischen „robota“ = Fronarbeit.</p><p>1948 warfen die Kommunisten das komplette Mobiliar aus dem Fenster — erst 1992 kehrte das Café zurück: rosa Wände, Messinglampen, Billardsaal. Zeit nehmen. So schön startet ein Sonntag selten.</p>`,
+    fact:'Das Wort „Roboter“ debütierte 1920 in Karel Čapeks Theaterstück „R.U.R.“ — vorgeschlagen hat es sein Bruder Josef. Die ganze Welt sagt heute ein tschechisches Wort.',
+    audio:`Frühstück bei den Genies: Im Café Louvre, eröffnet 1902, saß Albert Einstein — er war damals Professor in Prag und gab hier angeblich lieber kleine Geigenkonzerte als Vorlesungen. Kafka kam natürlich auch, aber das tat er ja überall. Und das Wort „Roboter“? Wurde von den Brüdern Čapek erfunden, ebenfalls Stammgäste — es kommt vom tschechischen Wort für Fronarbeit. 1948 flog das gesamte Mobiliar aus dem Fenster, die Kommunisten hatten für Kaffeehauskultur wenig übrig. Seit 1992 ist alles wieder da: rosa Wände, Messinglampen, Billardsaal. Heute ist euer entspanntester Tag. Also: zweite Tasse bestellen, Zeitung aufschlagen, Genie-Atmosphäre einatmen. Einstein hätte es genauso gemacht.`
+  },
+  {
+    t:'12:30', e:'🍦', n:'Snack · Ovocný Světozor',
+    short:'Chlebíčky-Klassiker + Prags berühmtestes Eis',
+    g:[50.0818334,14.4249549],
+    story:`<p>Die Chlebíčky-Klassiker in der Passage Světozor — und daneben Prags berühmteste Eisdiele, seit Jahrzehnten mit denselben Sorten. Aus gutem Grund.</p><p>Bewusst leichter Lunch: Das große Essen kommt heute Abend auf dem Wasser.</p>`,
+    fact:'Das Vanille-Eis hier gilt unter Pragern als das beste der Stadt — wer nach den Schnittchen noch Platz hat, weiß, was zu tun ist.'
+  },
+  {
+    t:'13:00', e:'🐴', n:'Lucerna-Passage',
+    short:'Marmor, Messing — und ein totes Pferd an der Decke',
+    g:[50.0810,14.4263],
+    story:`<p>Die Lucerna-Passage (1907–1921) baute <b>Vácslav Havel</b> — der Großvater des späteren Präsidenten Václav Havel. Marmor, Messing, ein Kinosaal von 1909, der bis heute läuft.</p><p>Unter der Kuppel hängt David Černýs <b>„Pferd“</b>: Der heilige Wenzel reitet ein totes, kopfüber aufgehängtes Ross — die freche Antwort auf das heroische Reiterstandbild draußen auf dem Platz.</p>`,
+    fact:'Černý ist Prags Skandalkünstler — von ihm stammen auch die krabbelnden Riesenbabys am Fernsehturm und die gelben Pinguine von Freitag.',
+    audio:`Kurzer Halt unter der Kuppel der Lucerna-Passage — gebaut vom Großvater von Václav Havel, dem Dichter-Präsidenten. Und jetzt schaut bitte nach oben: Dort hängt ein Pferd. Tot. Kopfüber. Und darauf sitzt seelenruhig der heilige Wenzel. Das ist Kunst von David Černý, dem frechsten Künstler der Stadt — eine Parodie auf das heldenhafte Wenzel-Denkmal, das draußen auf dem Platz steht. Was er damit sagen will, erklärt Černý aus Prinzip nicht. Die gelben Pinguine von Freitag am Ufer? Auch von ihm. Die krabbelnden Riesenbabys am Fernsehturm? Ebenfalls. Prag leistet sich einen Hofnarren — und die Stadt ist dadurch deutlich unterhaltsamer. Weiter geht es zum Wenzelsplatz. Zum seriösen Pferd.`
+  },
+  {
+    t:'13:30', e:'🔑', n:'Wenzelsplatz',
+    short:'Das Forum der Nation — Schlüsselklimpern inklusive',
+    g:[50.0817831,14.4271187],
+    story:`<p>750 Meter Boulevard, einst Pferdemarkt, heute das Forum der Nation: 1918 wurde hier die Republik gefeiert, 1969 verbrannte sich der Student <b>Jan Palach</b> aus Protest gegen die sowjetische Besatzung, und 1989 klimperten hier <b>300.000 Menschen mit ihren Schlüsseln</b> — das Geräusch der Samtenen Revolution.</p><p>Oben am Reiterstandbild des heiligen Wenzel ist der klassische Treffpunkt der Prager: „unterm Schwanz“. Gemeint ist der Pferdeschweif. Hoffentlich.</p>`,
+    fact:'Die Samtene Revolution 1989 dauerte nur sechs Wochen und kam ohne einen einzigen Schuss aus — Dissident Havel zog vom Gefängnis direkt auf die Burg.',
+    audio:`Ihr lauft jetzt über das Wohnzimmer der tschechischen Geschichte. Hier wurde 1918 die Republik gefeiert. Hier standen 1968 sowjetische Panzer. Und hier, im November 1989, klimperten dreihunderttausend Menschen mit ihren Hausschlüsseln — als Zeichen an das Regime: Zeit zu gehen. Sechs Wochen später war die Diktatur Geschichte, ohne einen einzigen Schuss, und der Dichter Václav Havel zog vom Gefängnis direkt auf die Burg. Samtene Revolution nennt man das bis heute. Oben wacht der heilige Wenzel hoch zu Ross — und unterm Pferdeschweif verabreden sich die Prager seit Generationen. Geht ruhig hin und sagt: Wir treffen uns unterm Schwanz. Dann klingt ihr wie echte Einheimische.`
+  },
+  {
+    t:'14:45', e:'💍', n:'Local Artists · Melantrichova 18',
+    short:'Echtes tschechisches Handwerk — Granat zum 60.?',
+    g:[50.0862784,14.4207496],
+    story:`<p>Tschechisches Kunsthandwerk statt „Made in China“-Magnete: Schmuck mit <b>böhmischem Granat</b>, Glas, Keramik, Illustrationen. Der richtige Ort für ein echtes Andenken.</p><p>Der tiefrote Granat ist DER böhmische Klassiker — und mal ehrlich: Ein Granat-Stück zum Sechzigsten hätte Stil.</p>`,
+    fact:'Böhmischer Granat („český granát“) wird seit dem Mittelalter nur in Nordböhmen gefunden — Kaiserin Sisi trug ihn, Goethe verschenkte ihn an seine große Liebe.'
+  },
+  {
+    t:'15:30', e:'🛍️', n:'Palladium (optional)',
+    short:'Falls noch etwas fehlt — 5 Min. vom Apartment',
+    g:[50.0892359,14.4290386],
+    story:`<p>Falls noch etwas fehlt: rund 170 Geschäfte in einer ehemaligen Kaserne, fünf Minuten vom Apartment.</p><p>Aber nicht zu lange aufhalten lassen — heute Abend wartet das Finale.</p>`,
+    fact:'Bei den Bauarbeiten stieß man auf Reste mittelalterlicher Häuser — sie sind im Untergeschoss ausgestellt. Shopping mit Ausgrabung.'
+  },
+  {
+    t:'16:30', e:'🥮', n:'Kaffee · Café im Gemeindehaus',
+    short:'Jugendstil-Pracht unter Kristalllüstern',
+    g:[50.0877208,14.4277908],
+    story:`<p>Kaffee unter Kristalllüstern im schönsten Jugendstilsaal der Stadt — der perfekte Ort, um die Beine ein letztes Mal vor dem Abend auszuruhen. Hier hatten wir am Donnerstag begonnen; heute gönnt ihr euch das Innenleben.</p>`,
+    fact:'Das Gemeindehaus ist ein Gesamtkunstwerk: Auch Alfons Mucha — der Meister vom Dom-Fenster — hat hier ganze Säle ausgemalt.'
+  },
+  {
+    t:'17:30', e:'👗', n:'Umziehen fürs Finale', b:[['pause','~50 Minuten']],
+    short:'Smart-casual + leichte Jacke — auf dem Wasser wird es frisch',
+    g:[50.0901624,14.4325082],
+    story:`<p>Zurück im Apartment: frisch machen, etwas Schickes anziehen — und <b>unbedingt eine leichte Jacke einpacken</b>. Auf der Moldau wird es nach Sonnenuntergang frisch, auch im Juni.</p><p>18:20 Abmarsch. Check-in am Pier ist um 18:30, das Boot wartet nicht.</p>`,
+    fact:'Dresscode-Realität auf dem Schiff: von Jeans bis Abendkleid alles dabei. Ihr seid die Geburtstagskinder — ihr gebt den Ton an.'
+  },
+  {
+    t:'18:20', e:'🚶‍♀️', n:'Spaziergang zum Pier 3A',
+    short:'9 Minuten: Klimentská → Revoluční → Stufen zum Ufer',
+    g:[50.0901358,14.4151028],
+    story:`<p>Gemütliche 9 Minuten: die Klimentská entlang, rechts in die Revoluční, an der Brücke die Stufen hinunter ans Ufer. <b>Pier 3A</b> liegt unter der Čechův-Brücke — Check-in mit QR-Code ab 18:30.</p>`,
+    fact:'Dvořákovo nábřeží — das Ufer ist nach dem Komponisten Antonín Dvořák benannt. Passender Auftakt für einen Abend mit Live-Musik.'
+  },
+  {
+    t:'19:00', e:'🚢', n:'Dinner-Cruise — das Finale', b:[['booked','Gebucht · 3 Std. · Buffet & Musik']],
+    short:'Prag im Abendkleid — Gläser hoch auf 2 × 60!',
+    g:[50.0901358,14.4151028],
+    story:`<p>Das große Finale: drei Stunden Moldau bei Nacht auf dem Glasboot. Welcome Drink, Buffet, Live-Musik — und draußen zieht das illuminierte Prag vorbei: Burg, Karlsbrücke, Nationaltheater, Tanzendes Haus.</p><p>Beim Wenden vor dem Tanzenden Haus habt ihr <b>DEN Blick</b>: die ganze Stadt golden im Wasser gespiegelt. Gläser heben — auf 2 × 60 Jahre!</p>`,
+    fact:'Das „Tanzende Haus“ (1996) heißt eigentlich „Ginger & Fred“ — nach Ginger Rogers und Fred Astaire. Der gläserne Turm ist sie, der steinerne er.',
+    audio:`Das ist er — der Festabend. Drei Stunden auf der Moldau, und Prag legt für euch sein Abendkleid an: die Burg angestrahlt, die Karlsbrücke im Laternenlicht, das Nationaltheater mit seiner goldenen Krone. Haltet die Kamera bereit, wenn das Schiff vor dem Tanzenden Haus wendet — zwei Gebäude, die sich aneinanderschmiegen wie Ginger Rogers und Fred Astaire, nach denen sie tatsächlich benannt sind. In diesem Moment liegt die ganze goldene Stadt im Wasser gespiegelt vor euch. Brigitte, Sylvia: Sechzig Jahre — und ein Abend wie dieser. Hebt die Gläser, lasst euch feiern. Prag verneigt sich heute vor zwei Jubilarinnen. Und wir uns auch. Alles, alles Gute zum Geburtstag!`
+  }
+  ]
+}
+];
+
+/* ============== PRAKTISCH ============== */
+const PRAKT = `
+<div class="day-head">
+  <div class="date">Immer griffbereit</div>
+  <h2 class="display">Praktisches</h2>
+</div>
+<p class="day-intro">Adressen, Buchungen, Geld, Spickzettel — alles für die Handtasche.</p>
+
+<div class="info-block">
+  <h3>🏠 Euer Zuhause</h3>
+  <p><b>Zlatnická 1127/4</b>, Praha 1 (Petrská čtvrť)<br>
+  <a href="https://maps.apple.com/?daddr=50.0901624,14.4325082&dirflg=w">📍 Route zum Apartment</a></p>
+</div>
+
+<div class="info-block">
+  <h3>📋 Buchungen</h3>
+  <div class="book-row"><span><b>Do 19:30</b> · Lokál Dlouhá</span><span class="book-status s-todo">am Vortag reservieren</span></div>
+  <div class="book-row"><span><b>Fr 14:00</b> · Führung Josefov (Zuzana)</span><span class="book-status s-ok">✓ bestätigt</span></div>
+  <div class="book-row"><span><b>Fr 19:00</b> · Pod Věží</span><span class="book-status s-ok">✓ gebucht</span></div>
+  <div class="book-row"><span><b>Sa 19:15</b> · Pasta Fresca</span><span class="book-status s-ok">✓ gebucht</span></div>
+  <div class="book-row"><span><b>So 10:00</b> · Café Louvre</span><span class="book-status s-todo">noch reservieren</span></div>
+  <div class="book-row"><span><b>So 19:00</b> · Dinner-Cruise, Pier 3A</span><span class="book-status s-ok">✓ gebucht</span></div>
+</div>
+
+<div class="info-block">
+  <h3>📞 Nummern</h3>
+  <p>Lokál Dlouhá · <a href="tel:+420734283874">+420 734 283 874</a><br>
+  Pod Věží · <a href="tel:+420774627150">+420 774 627 150</a><br>
+  Pasta Fresca · <a href="tel:+420224230244">+420 224 230 244</a><br>
+  Café Louvre · <a href="tel:+420224930949">+420 224 930 949</a><br>
+  Sisters Bistro · <a href="tel:+420731525061">+420 731 525 061</a><br>
+  <b>Notruf (EU): <a href="tel:112">112</a></b></p>
+</div>
+
+<div class="info-block">
+  <h3>💰 Geld</h3>
+  <ul>
+    <li>Währung: Tschechische Krone — <b>1 € ≈ 24 Kč</b>. Schnellrechnung: Kč durch 25 teilen, fertig.</li>
+    <li>Karte/Apple Pay geht fast überall — Bargeld nur für Markt &amp; Toiletten.</li>
+    <li>Trinkgeld: aufrunden oder ~10 %.</li>
+    <li><b>Warnung:</b> Wechselstuben mit „0 % commission“ meiden — miese Kurse. Lieber Karte oder Bankautomat einer echten Bank.</li>
+  </ul>
+</div>
+
+<div class="info-block">
+  <h3>🚋 Tram & Ticket</h3>
+  <ul>
+    <li>90-Minuten-Ticket ca. 40 Kč — am Automaten <b>in der Bahn</b> kontaktlos zahlbar.</li>
+    <li>Papiertickets entwerten (gelbe Stempelbox)!</li>
+    <li>Tram 22 = schönste Linie und leider auch Liebling der Taschendiebe: Tasche nach vorn.</li>
+  </ul>
+</div>
+
+<div class="info-block">
+  <h3>🔊 Audio-Guide-Hilfe</h3>
+  <ul>
+    <li>„Anhören“ tippen — gesprochen wird mit der iPhone-Stimme (auf Deutsch).</li>
+    <li>Kein Ton? Stummschalter an der Seite prüfen + Lautstärke hoch.</li>
+    <li>Erster Start kann 1–2 Sekunden brauchen.</li>
+  </ul>
+</div>
+
+<div class="info-block">
+  <h3>🗣️ Spickzettel Tschechisch</h3>
+  <div class="phrase"><span>Dobrý den</span><i>Guten Tag</i></div>
+  <div class="phrase"><span>Děkuji</span><i>Danke</i></div>
+  <div class="phrase"><span>Prosím</span><i>Bitte</i></div>
+  <div class="phrase"><span>Pivo, prosím</span><i>Ein Bier, bitte</i></div>
+  <div class="phrase"><span>Účet, prosím</span><i>Die Rechnung, bitte</i></div>
+  <div class="phrase"><span>Na zdraví!</span><i>Prost!</i></div>
+  <div class="phrase"><span>Krásné narozeniny!</span><i>Schönen Geburtstag!</i></div>
+</div>
+
+<div class="info-block">
+  <h3>🧳 Montag, 15. Juni</h3>
+  <p>Frühe Abreise: Koffer packen, 6 Minuten Fußweg zum Hauptbahnhof (Hlavní nádraží). Letzter Blick zurück — und <b>na shledanou, Prag!</b></p>
+</div>
+`;
+
+/* ============== ENGINE ============== */
+const store = {
+  get(k){ try{ return JSON.parse(localStorage.getItem('prag60-'+k)) }catch(e){ return this.mem[k]||null } },
+  set(k,v){ try{ localStorage.setItem('prag60-'+k, JSON.stringify(v)) }catch(e){ this.mem[k]=v } },
+  mem:{}
+};
+let visited = store.get('visited') || {};
+
+const tabsEl = document.getElementById('tabs');
+const panelsEl = document.getElementById('panels');
+
+function build(){
+  DAYS.forEach((d,di)=>{
+    const tb=document.createElement('button');
+    tb.className='tab'+(di===0?' active':'');
+    tb.innerHTML=`${d.tag} · ${d.title}<small>${d.date}</small>`;
+    tb.onclick=()=>show(di);
+    tabsEl.appendChild(tb);
+
+    const p=document.createElement('section');
+    p.className='panel'+(di===0?' active':'');
+    p.dataset.di=di;
+    let html=`<div class="day-head"><div class="date">${d.tag} · ${d.date}</div><h2 class="display">${d.title}</h2></div>
+      <p class="day-intro">${d.intro}</p>
+      <div class="progress-wrap"><div class="progress-label" id="plabel-${di}"></div>
+      <div class="progress-bar"><div class="progress-fill" id="pfill-${di}"></div></div></div>
+      <div class="stops">`;
+    d.stops.forEach((s,si)=>{
+      const id=`d${di}s${si}`;
+      const badges=(s.b||[]).map(b=>`<span class="badge ${b[0]}">${b[1]}</span>`).join('');
+      html+=`
+      <div class="stop ${visited[id]?'done':''}" id="${id}">
+        <div class="dot"></div><div class="time">${s.t}</div>
+        <div class="card">
+          <button class="card-head" onclick="toggle('${id}')">
+            <span class="card-emoji">${s.e}</span>
+            <span class="card-title"><span class="name">${s.n}</span>
+            <span class="short">${s.short}</span>
+            ${badges?`<span class="badges">${badges}</span>`:''}</span>
+            <span class="chev">▼</span>
+          </button>
+          <div class="card-body">
+            ${s.story}
+            ${s.fact?`<div class="fact"><b>Schon gewusst?</b>${s.fact}</div>`:''}
+            <div class="actions">
+              ${s.audio?`<button class="btn btn-audio" id="au-${id}" onclick="speakStop('${id}')">▶&ensp;Anhören</button>`:''}
+              <button class="btn btn-visited" onclick="markVisited('${id}',${di})">${visited[id]?'✓ Besucht':'Als besucht markieren'}</button>
+              ${s.g?`<a class="btn btn-map" href="https://maps.apple.com/?daddr=${s.g[0]},${s.g[1]}&dirflg=w">📍 Route</a>`:''}
+            </div>
+          </div>
+        </div>
+      </div>`;
+    });
+    html+='</div>';
+    p.innerHTML=html;
+    panelsEl.appendChild(p);
+    updateProgress(di);
+  });
+
+  // Praktisch-Tab
+  const tb=document.createElement('button');
+  tb.className='tab';
+  tb.innerHTML=`ℹ️ Praktisch<small>Geld · Tram · Hilfe</small>`;
+  tb.onclick=()=>show(DAYS.length);
+  tabsEl.appendChild(tb);
+  const p=document.createElement('section');
+  p.className='panel';
+  p.innerHTML=PRAKT;
+  panelsEl.appendChild(p);
+}
+
+function show(i){
+  document.querySelectorAll('.tab').forEach((t,ti)=>t.classList.toggle('active',ti===i));
+  document.querySelectorAll('.panel').forEach((p,pi)=>p.classList.toggle('active',pi===i));
+  stopSpeech();
+  window.scrollTo({top:0});
+}
+
+function toggle(id){
+  document.getElementById(id).classList.toggle('open');
+}
+
+function markVisited(id,di){
+  visited[id]=!visited[id];
+  store.set('visited',visited);
+  const el=document.getElementById(id);
+  el.classList.toggle('done',visited[id]);
+  el.querySelector('.btn-visited').textContent=visited[id]?'✓ Besucht':'Als besucht markieren';
+  updateProgress(di);
+}
+
+function updateProgress(di){
+  const total=DAYS[di].stops.length;
+  let n=0;
+  DAYS[di].stops.forEach((s,si)=>{ if(visited[`d${di}s${si}`]) n++; });
+  const pct=total?Math.round(n/total*100):0;
+  const lbl=document.getElementById('plabel-'+di);
+  const fill=document.getElementById('pfill-'+di);
+  if(lbl) lbl.textContent= n===total&&total>0 ? `Alle ${total} entdeckt — Tag gemeistert! 🎉` : `${n} von ${total} entdeckt`;
+  if(fill) fill.style.width=pct+'%';
+}
+
+/* ---------- Sprachausgabe ---------- */
+let speakingId=null;
+function speakStop(id){
+  const synth=window.speechSynthesis;
+  if(!synth){ alert('Sprachausgabe wird auf diesem Gerät leider nicht unterstützt.'); return; }
+  const btn=document.getElementById('au-'+id);
+  if(speakingId===id){ stopSpeech(); return; }
+  stopSpeech();
+  // Text finden
+  let text=null;
+  outer: for(let di=0;di<DAYS.length;di++){
+    for(let si=0;si<DAYS[di].stops.length;si++){
+      if(`d${di}s${si}`===id){ text=DAYS[di].stops[si].audio; break outer; }
+    }
+  }
+  if(!text) return;
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='de-DE'; u.rate=0.97; u.pitch=1.02;
+  const voices=synth.getVoices().filter(v=>v.lang&&v.lang.startsWith('de'));
+  const pick=voices.find(v=>/anna|petra|helena/i.test(v.name))||voices[0];
+  if(pick) u.voice=pick;
+  u.onend=()=>{ if(btn){btn.classList.remove('playing');btn.innerHTML='▶&ensp;Anhören';} speakingId=null; };
+  u.onerror=u.onend;
+  speakingId=id;
+  if(btn){ btn.classList.add('playing'); btn.innerHTML='⏸&ensp;Stopp'; }
+  synth.speak(u);
+}
+function stopSpeech(){
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  if(speakingId){
+    const b=document.getElementById('au-'+speakingId);
+    if(b){ b.classList.remove('playing'); b.innerHTML='▶&ensp;Anhören'; }
+  }
+  speakingId=null;
+}
+if(window.speechSynthesis) window.speechSynthesis.onvoiceschanged=()=>{};
+
+/* ---------- Splash & Konfetti ---------- */
+const COLORS=['#e8c878','#b8891f','#8e2f3c','#c9576a','#41626e','#f3e3c2'];
+document.getElementById('openCard').addEventListener('click',()=>{
+  burst();
+  setTimeout(()=>document.getElementById('splash').classList.add('gone'),350);
+});
+function burst(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  for(let i=0;i<70;i++){
+    const c=document.createElement('div');
+    c.className='confetti';
+    const s=6+Math.random()*8;
+    c.style.cssText=`left:${Math.random()*100}vw;width:${s}px;height:${s*0.6}px;
+      background:${COLORS[i%COLORS.length]};
+      animation-duration:${2.4+Math.random()*2.2}s;
+      animation-delay:${Math.random()*0.5}s;
+      transform:rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),5500);
+  }
+}
+
+build();
+</script>
+</body>
+</html>
