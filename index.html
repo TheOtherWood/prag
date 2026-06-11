@@ -674,7 +674,7 @@ function build(){
 function show(i){
   document.querySelectorAll('.tab').forEach((t,ti)=>t.classList.toggle('active',ti===i));
   document.querySelectorAll('.panel').forEach((p,pi)=>p.classList.toggle('active',pi===i));
-  stopSpeech();
+  stopAll();
   window.scrollTo({top:0});
 }
 
@@ -702,42 +702,75 @@ function updateProgress(di){
   if(fill) fill.style.width=pct+'%';
 }
 
-/* ---------- Sprachausgabe ---------- */
-let speakingId=null;
+/* ---------- Audio: MP3 zuerst, Navi-Stimme als Fallback ---------- */
+let player={audio:null,id:null};   // laufende MP3
+let speakingId=null;               // laufendes TTS
+
+function findAudioText(id){
+  for(let di=0;di<DAYS.length;di++)
+    for(let si=0;si<DAYS[di].stops.length;si++)
+      if(`d${di}s${si}`===id) return DAYS[di].stops[si].audio;
+  return null;
+}
+function setPlaying(b){ if(b){ b.classList.add('playing'); b.innerHTML='⏸&ensp;Stopp'; } }
+function resetBtn(b){ if(b){ b.classList.remove('playing'); b.innerHTML='▶&ensp;Anhören'; } }
+
+function stopAll(){
+  if(player.audio){ try{player.audio.pause();}catch(e){} }
+  const pid=player.id; player.audio=null; player.id=null;
+  if(pid) resetBtn(document.getElementById('au-'+pid));
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  if(speakingId) resetBtn(document.getElementById('au-'+speakingId));
+  speakingId=null;
+}
+
+// Haupt-Einstieg vom Button
 function speakStop(id){
-  const synth=window.speechSynthesis;
-  if(!synth){ alert('Sprachausgabe wird auf diesem Gerät leider nicht unterstützt.'); return; }
+  if(player.id===id || speakingId===id){ stopAll(); return; }
+  stopAll();
   const btn=document.getElementById('au-'+id);
-  if(speakingId===id){ stopSpeech(); return; }
-  stopSpeech();
-  // Text finden
-  let text=null;
-  outer: for(let di=0;di<DAYS.length;di++){
-    for(let si=0;si<DAYS[di].stops.length;si++){
-      if(`d${di}s${si}`===id){ text=DAYS[di].stops[si].audio; break outer; }
-    }
-  }
-  if(!text) return;
+  setPlaying(btn);
+  let fellBack=false;
+  const goTTS=()=>{ if(fellBack) return; fellBack=true; player.audio=null; player.id=null; ttsSpeak(id,btn); };
+  const a=new Audio('audio/'+id+'.mp3');
+  a.preload='auto';
+  a.addEventListener('ended',()=>{ player.audio=null; player.id=null; resetBtn(btn); });
+  a.addEventListener('error',goTTS);
+  player.audio=a; player.id=id;
+  const p=a.play();
+  if(p&&p.catch) p.catch(goTTS);
+}
+
+// Fallback: iPhone-Stimme
+function ttsSpeak(id,btn){
+  const synth=window.speechSynthesis;
+  if(!synth){ resetBtn(btn); return; }
+  const text=findAudioText(id);
+  if(!text){ resetBtn(btn); return; }
   const u=new SpeechSynthesisUtterance(text);
   u.lang='de-DE'; u.rate=0.97; u.pitch=1.02;
   const voices=synth.getVoices().filter(v=>v.lang&&v.lang.startsWith('de'));
   const pick=voices.find(v=>/anna|petra|helena/i.test(v.name))||voices[0];
   if(pick) u.voice=pick;
-  u.onend=()=>{ if(btn){btn.classList.remove('playing');btn.innerHTML='▶&ensp;Anhören';} speakingId=null; };
+  u.onend=()=>{ resetBtn(btn); speakingId=null; };
   u.onerror=u.onend;
   speakingId=id;
-  if(btn){ btn.classList.add('playing'); btn.innerHTML='⏸&ensp;Stopp'; }
+  setPlaying(btn);
   synth.speak(u);
 }
-function stopSpeech(){
-  if(window.speechSynthesis) window.speechSynthesis.cancel();
-  if(speakingId){
-    const b=document.getElementById('au-'+speakingId);
-    if(b){ b.classList.remove('playing'); b.innerHTML='▶&ensp;Anhören'; }
-  }
-  speakingId=null;
-}
 if(window.speechSynthesis) window.speechSynthesis.onvoiceschanged=()=>{};
+
+// MP3s einmalig im Hintergrund vorladen (füllt den Cache fürs Offline-Hören)
+function preloadAudio(){
+  const ids=[];
+  DAYS.forEach((d,di)=>d.stops.forEach((s,si)=>{ if(s.audio) ids.push(`d${di}s${si}`); }));
+  let i=0;
+  (function next(){
+    if(i>=ids.length) return;
+    const id=ids[i++];
+    fetch('audio/'+id+'.mp3',{cache:'force-cache'}).catch(()=>{}).finally(()=>setTimeout(next,250));
+  })();
+}
 
 /* ---------- Splash, Jingle & Konfetti ---------- */
 const COLORS=['#e8c878','#b8891f','#8e2f3c','#c9576a','#41626e','#f3e3c2'];
@@ -791,6 +824,7 @@ function burst(){
 }
 
 build();
+preloadAudio();
 </script>
 </body>
 </html>
